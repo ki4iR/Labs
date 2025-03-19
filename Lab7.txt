@@ -1,0 +1,238 @@
+Lab7
+-----------------
+Name: Kiril Radev
+SID : 241005831
+
+-Q1
+import java.util.ArrayList;
+
+public class ArrayList_Introduction {
+	
+	public static void main(String[] args)
+	{
+		ArrayList<Integer> a = new ArrayList<>();
+		a.add(1);
+		a.add(2);
+		a.add(3);
+		a.add(4);
+		a.add(5);
+
+		shiftByN(a, 2);
+
+		System.out.println(a.toString());
+	}
+	
+	public static void shiftByN(ArrayList<Integer> a, Integer n)
+	{
+		//temporary storage list
+		ArrayList<Integer> b = new ArrayList<>();
+		//if the shifting constant n > size we must alter the shift to be in the boundary
+		n = RestrictShiftingConstant(n, a.size());
+		
+		
+		//sort them while adding them
+		for(int i = a.size() - n; i < a.size(); i++){
+			b.add(a.get(i));  //do not need to clarify the index on b
+                              //since arrayLists are not dependent on their index
+                              //and work quite like a stack                     
+		}
+		for(int i = 0; i < a.size() - n; i++){
+			b.add(a.get(i));
+		}
+		
+		//a = b; does not work since ArrayList<Integer> a is local
+		//to the method hence the actual ArrayList<Integer> a in main
+		//wont be affected
+		for(int i = 0; i < a.size(); i++){
+			a.set(i, b.get(i));
+		}
+	}
+	
+	public static Integer RestrictShiftingConstant(Integer n, Integer size)
+	{
+		if(n >= 0) 
+		return n % size;
+		
+		//since the given integer operations are reflectively symmetrical 
+		//integer operation of -1 = integer operation of size + (-1), etc.
+		Integer r = size + n;
+		return r % size;
+	}
+}//END
+
+
+-Q2
+import java.util.ArrayList;
+
+public class ArrayList_Introduction2 {
+	public static void main(String[] args)
+	{
+		ArrayList<Integer> a = new ArrayList<>();
+		a.add(1);
+		a.add(2);
+		a.add(3);
+
+		ArrayList<Integer> b = new ArrayList<>();
+		b.add(3);
+		b.add(2);
+
+		System.out.println(getOverlap(a, b).toString());
+	}
+	
+	public static ArrayList<Integer> getOverlap(ArrayList<Integer> a,ArrayList<Integer> b)
+	{
+		ArrayList<Integer> container = new ArrayList<>();
+		
+		for(int i = 0; i < a.size(); i++)
+		{
+			for(int j = 0; j < b.size(); j++)
+			{
+				if(a.get(i).equals(b.get(j))) //since Integer is a wrapper of int we use .equals()
+				{ 
+					container.add(a.get(i));
+				}
+			}
+		}
+		
+		return container;
+	}
+}//END
+
+
+-Q3
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+
+public class Tester3 
+{
+	public static void main(String[] args) 
+	{
+		LinkedList<String> a = new LinkedList<>();
+		a.add("Alice");
+		a.add("Bob");
+		a.add("Charlie");
+		// Update value at index 0
+		a.set(0, "John");
+		// Remove Element at index 1
+		a.remove(1);
+		
+		System.out.println(a.toString());
+		System.out.println(toReversedArrayList(a).toString());
+	}
+	
+	public static ArrayList<String> toReversedArrayList(LinkedList<String> a)
+	{
+		ArrayList<String> b = new ArrayList<>(a);
+		//standard approach
+		ArrayList<String> b_reverse = new ArrayList<>();
+		for(int i = b.size() - 1; i >= 0;i--)
+		{
+			b_reverse.add(b.get(i));
+		}
+		
+		//easy trick
+		//Collections.reverse(b); 
+		
+		return b_reverse;
+	}
+}//END
+
+
+-Q4
+import java.util.LinkedList;
+import java.util.HashMap;
+
+public class Tester4 {
+	public static void main(String[] args)
+	{
+		LinkedList<String> cars = new LinkedList<>();
+		cars.add("BMW");
+		cars.add("Volvo");
+		cars.add("BMW");
+		cars.add("Ford");
+		cars.add("Skoda");
+		cars.add("Ford");
+
+		System.out.println(getCounts(cars).toString());
+	}
+	
+	public static <T> HashMap<T, Integer> getCounts(LinkedList<T> list) 
+	{
+		HashMap<T, Integer> container = new HashMap<>(); 
+		
+		for(int i = 0; i < list.size(); i++)
+		{
+			Integer counter = 1;
+			for(int j = i + 1; j < list.size();j++)
+			{
+				if(list.get(i).equals(list.get(j))) 
+				{
+					list.remove(j);
+					counter++;
+				}
+			}
+			
+			container.put(list.get(i), counter);
+		}
+		
+		return container;
+	}
+}//END
+
+
+-Q5
+import java.util.Stack;
+
+public class Tester5 
+{
+	public static void main(String[] args)
+	{
+		System.out.println(matchingBrackets("({[]})"));             // true
+		System.out.println(matchingBrackets("((({{{[[]]}}})))"));   // true
+		System.out.println(matchingBrackets("()"));                 // true
+		System.out.println(matchingBrackets("[]"));                 // true
+		System.out.println(matchingBrackets("{}"));                 // true
+		System.out.println();
+		System.out.println(matchingBrackets("{[(])}"));             // false
+		System.out.println(matchingBrackets("[(){}"));              // false
+		System.out.println(matchingBrackets(")"));                  // false
+		System.out.println(matchingBrackets("({)}"));               // false
+	}
+	
+	// ( { [ ] } )
+	static boolean matchingBrackets(String s) 
+	{
+		//use stack based on FILO practice 
+		Stack<Character> stack = new Stack<>();
+		//push the first bracket since .peak() throws exception
+		//if the stack is of length 0/empty
+		stack.push(s.charAt(0));
+		
+		for(int i = 1; i < s.length(); i++)
+		{
+			//check the brackets
+			if(stack.peek().equals('(') && s.charAt(i) == ')')
+			{
+				stack.pop();
+			}
+			else if(stack.peek().equals('[') && s.charAt(i) == ']')
+			{
+				stack.pop();
+			}
+			else if(stack.peek().equals('{') && s.charAt(i) == '}')
+			{
+				stack.pop();
+			}
+			//add the bracket if it has not been matched
+			else
+			{
+				stack.push(s.charAt(i));
+			}
+		}
+		
+		//since we .pop() each matching bracket if the stack is empty,
+		//then every bracket must have been balanced
+		return stack.empty();
+	}
+}//END
